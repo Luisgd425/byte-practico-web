@@ -1,17 +1,42 @@
 ---
-// Inicio provisional. En la Fase 2 se reemplaza por: destacado, últimos artículos, newsletter y categorías.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import NewsletterBox from '../components/NewsletterBox.astro';
 import { CATEGORIES } from '../consts';
+import { getArticles } from '../lib/articles';
+
+const articles = await getArticles();
+// Destacado: el más reciente marcado con featured: true; si no hay, el más reciente.
+const featured = articles.find((a) => a.data.featured) ?? articles[0];
+const latest = articles.filter((a) => a !== featured).slice(0, 9);
 ---
 
 <BaseLayout>
-  <section class="py-12">
-    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Tecnología e IA, explicadas para usarlas hoy</h1>
-    <p class="mt-4 max-w-2xl text-lg text-zinc-700 dark:text-zinc-300">
-      Noticias y guías prácticas en español. Sin humo, con ejemplos reales.
-    </p>
-  </section>
-  <section aria-labelledby="cats">
+  <h1 class="sr-only">Byte Práctico: noticias y guías de tecnología e IA en español</h1>
+
+  {featured ? (
+    <section aria-label="Artículo destacado" class="border-b border-zinc-200 pb-10 dark:border-zinc-800">
+      <ArticleCard article={featured} large eager />
+    </section>
+  ) : (
+    <section class="py-12">
+      <p class="font-serif text-4xl font-bold">Tecnología e IA, explicadas para usarlas hoy</p>
+      <p class="mt-4 text-lg text-zinc-700 dark:text-zinc-300">Muy pronto, los primeros artículos.</p>
+    </section>
+  )}
+
+  {latest.length > 0 && (
+    <section aria-labelledby="ultimos" class="py-10">
+      <h2 id="ultimos" class="text-2xl font-bold">Últimos artículos</h2>
+      <div class="mt-6 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        {latest.map((a) => <ArticleCard article={a} />)}
+      </div>
+    </section>
+  )}
+
+  <NewsletterBox />
+
+  <section aria-labelledby="cats" class="py-6">
     <h2 id="cats" class="text-2xl font-bold">Categorías</h2>
     <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {CATEGORIES.map((c) => (

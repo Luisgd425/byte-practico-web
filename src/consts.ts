@@ -7,6 +7,9 @@ export const SITE = {
   author: 'Luis',
   locale: 'es_MX',
   lang: 'es',
+  // TODO: cambia por un correo real que revises (puede ser un Gmail gratuito creado para el proyecto)
+  email: 'contacto@bytepractico.com',
+  country: 'México',
 } as const;
 
 export const SOCIAL = [

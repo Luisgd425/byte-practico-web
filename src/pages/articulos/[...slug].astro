@@ -1,0 +1,154 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import NewsletterBox from '../../components/NewsletterBox.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import { SITE } from '../../consts';
+import { getArticles, categoryName, formatDate, readingTime } from '../../lib/articles';
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article, articles } }));
+}
+
+const { article, articles } = Astro.props;
+const { data } = article;
+const { Content, headings } = await render(article);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+const pageUrl = new URL(Astro.url.pathname, Astro.site).href;
+
+// Relacionados: primero de la misma categoría, luego los más recientes.
+const others = articles.filter((a) => a.id !== article.id);
+const related = [
+  ...others.filter((a) => a.data.category === data.category),
+  ...others.filter((a) => a.data.category !== data.category),
+].slice(0, 3);
+
+// Imagen para compartir en redes (JPG de 1200 px, el formato que todas aceptan)
+const ogImage = data.heroImage ? (await getImage({ src: data.heroImage, width: 1200, format: 'jpeg' })).src : undefined;
+
+const jsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: data.title,
+    description: data.description,
+    image: ogImage ? [new URL(ogImage, Astro.site).href] : undefined,
+    datePublished: data.pubDate.toISOString(),
+    dateModified: (data.updatedDate ?? data.pubDate).toISOString(),
+    author: { '@type': 'Person', name: data.author, url: new URL('/sobre-nosotros', Astro.site).href },
+    publisher: { '@type': 'Organization', name: SITE.name, logo: { '@type': 'ImageObject', url: new URL('/logo.png', Astro.site).href } },
+    mainEntityOfPage: pageUrl,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Inicio', item: Astro.site?.href },
+      { '@type': 'ListItem', position: 2, name: categoryName(data.category), item: new URL(`/categoria/${data.category}`, Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: data.title, item: pageUrl },
+    ],
+  },
+];
+
+// Lo que se inserta donde el artículo escribe <Mitad /> (en archivos .mdx).
+// En la Fase 3 se añade aquí también el anuncio de mitad de contenido.
+const components = { Mitad: NewsletterBox };
+---
+
+<BaseLayout title={data.title} description={data.description} image={ogImage} type="article" noindex={data.draft} jsonLd={jsonLd}>
+  {data.draft && (
+    <p class="mb-6 rounded bg-amber-100 p-3 text-amber-900">
+      <strong>Borrador:</strong> solo se ve en tu computadora (npm run dev). Cambia <code>draft: false</code> para publicarlo.
+    </p>
+  )}
+
+  <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_18rem] lg:gap-12">
+    <article data-pagefind-body>
+      <nav aria-label="Ruta de navegación" class="text-sm text-zinc-600 dark:text-zinc-400" data-pagefind-ignore>
+        <a href="/" class="hover:underline">Inicio</a>{' / '}<a href={`/categoria/${data.category}`} class="hover:underline">{categoryName(data.category)}</a>
+      </nav>
+
+      <header class="mt-3">
+        <h1 class="text-4xl leading-tight font-bold sm:text-5xl">{data.title}</h1>
+        <p class="mt-4 text-xl text-zinc-700 dark:text-zinc-300">{data.description}</p>
+        <p class="mt-4 text-sm text-zinc-600 dark:text-zinc-400" data-pagefind-ignore>
+          Por <a href="/sobre-nosotros" class="font-semibold text-zinc-900 hover:underline dark:text-zinc-100">{data.author}</a> ·
+          <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>
+          {data.updatedDate && <> · Actualizado <time datetime={data.updatedDate.toISOString()}>{formatDate(data.updatedDate)}</time></>}
+          · {readingTime(article.body)} min de lectura
+        </p>
+      </header>
+
+      <!-- Fase 3: aquí va el anuncio "debajo del título" -->
+
+      {data.heroImage && (
+        <figure class="mt-8">
+          <Image
+            src={data.heroImage}
+            alt={data.heroAlt ?? ''}
+            widths={[480, 800, 1200]}
+            sizes="(min-width: 1024px) 760px, 100vw"
+            loading="eager"
+            fetchpriority="high"
+            class="aspect-video w-full rounded-xl object-cover"
+          />
+        </figure>
+      )}
+
+      {toc.length > 2 && (
+        <details class="mt-8 rounded-lg border border-zinc-200 p-4 lg:hidden dark:border-zinc-800" data-pagefind-ignore>
+          <summary class="cursor-pointer font-semibold">Contenido</summary>
+          <ol class="mt-2 space-y-1 text-sm">
+            {toc.map((h) => <li class={h.depth === 3 ? 'ml-4' : ''}><a href={`#${h.slug}`} class="hover:underline">{h.text}</a></li>)}
+          </ol>
+        </details>
+      )}
+
+      <div class="prose prose-lg prose-zinc mt-8 max-w-none dark:prose-invert prose-headings:font-serif prose-a:text-brand-700 dark:prose-a:text-brand-400">
+        <Content components={components} />
+      </div>
+
+      {data.sources.length > 0 && (
+        <section aria-labelledby="fuentes" class="mt-10 border-t border-zinc-200 pt-6 dark:border-zinc-800">
+          <h2 id="fuentes" class="text-xl font-bold">Fuentes</h2>
+          <ol class="mt-3 list-decimal space-y-1 pl-5 text-sm">
+            {data.sources.map((s) => <li><a href={s.url} rel="noopener" target="_blank" class="text-brand-700 hover:underline dark:text-brand-400">{s.title}</a></li>)}
+          </ol>
+        </section>
+      )}
+
+      <div class="mt-8" data-pagefind-ignore><ShareButtons url={pageUrl} title={data.title} /></div>
+      <NewsletterBox title="¿Te sirvió? Recibe más como esto en tu correo" />
+    </article>
+
+    <aside class="hidden lg:block" data-pagefind-ignore>
+      <div class="sticky top-6 space-y-8">
+        {toc.length > 2 && (
+          <nav aria-labelledby="toc-title">
+            <p id="toc-title" class="text-sm font-semibold tracking-wide uppercase">Contenido</p>
+            <ol class="mt-3 space-y-2 border-l border-zinc-200 text-sm dark:border-zinc-800">
+              {toc.map((h) => (
+                <li class={h.depth === 3 ? 'pl-7' : 'pl-4'}>
+                  <a href={`#${h.slug}`} class="text-zinc-700 hover:text-brand-700 dark:text-zinc-300 dark:hover:text-brand-400">{h.text}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+        <!-- Fase 3: aquí va el anuncio del sidebar -->
+      </div>
+    </aside>
+  </div>
+
+  {related.length > 0 && (
+    <section aria-labelledby="relacionados" class="mt-16 border-t border-zinc-200 pt-10 dark:border-zinc-800" data-pagefind-ignore>
+      <h2 id="relacionados" class="text-2xl font-bold">También te puede interesar</h2>
+      <div class="mt-6 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((a) => <ArticleCard article={a} />)}
+      </div>
+    </section>
+  )}
+</BaseLayout>

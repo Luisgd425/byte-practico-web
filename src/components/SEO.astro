@@ -1,0 +1,51 @@
+---
+// Metadatos para Google y redes sociales. Lo usa BaseLayout en todas las páginas.
+import { SITE, SOCIAL } from '../consts';
+
+interface Props {
+  title: string; // Título completo, ya con " | Byte Práctico"
+  description: string;
+  image?: string; // URL de la imagen para compartir (si falta, se usa la genérica)
+  type?: 'website' | 'article';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[]; // Datos estructurados extra (Article, BreadcrumbList…)
+}
+
+const { title, description, image = '/og-default.png', type = 'website', noindex = false, jsonLd = [] } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(image, Astro.site);
+
+// La organización se declara en todas las páginas: ayuda a Google a entender quién publica.
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.name,
+  url: Astro.site?.href,
+  logo: new URL('/logo.png', Astro.site).href,
+  sameAs: SOCIAL.map((s) => s.url),
+};
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex" />}
+<link rel="alternate" type="application/rss+xml" title={SITE.name} href="/rss.xml" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={SITE.name} />
+<meta property="og:locale" content={SITE.locale} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+
+{[organization, ...jsonLd].map((data) => <script type="application/ld+json" set:html={JSON.stringify(data)} />)}

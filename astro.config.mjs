@@ -13,5 +13,6 @@ export default defineConfig({
     plugins: [tailwindcss()]
   },
 
-  integrations: [mdx(), sitemap()]
+  // /buscar no se indexa, así que tampoco va en el sitemap
+  integrations: [mdx(), sitemap({ filter: (page) => !page.includes('/buscar') })]
 });

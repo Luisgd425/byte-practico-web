@@ -1,0 +1,37 @@
+---
+// Buscador con Pagefind. El índice se crea al final de `npm run build`,
+// así que en `npm run dev` el buscador no funciona: pruébalo con `npm run build && npm run preview`.
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Buscar" description="Busca artículos, guías y noticias de tecnología e IA en Byte Práctico." noindex>
+  <h1 class="text-4xl font-bold">Buscar</h1>
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+  <div id="buscador" class="mt-8"></div>
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.PagefindUI
+      ? new PagefindUI({
+          element: '#buscador',
+          showSubResults: true,
+          translations: { placeholder: 'Escribe lo que buscas…', zero_results: 'Sin resultados para [SEARCH_TERM]' },
+        })
+      : (document.getElementById('buscador').textContent =
+          'El buscador solo funciona en el sitio compilado (npm run build && npm run preview).');
+  </script>
+</BaseLayout>
+
+<style is:global>
+  /* Colores del buscador que siguen el modo claro/oscuro */
+  #buscador {
+    --pagefind-ui-primary: var(--color-brand-700);
+    --pagefind-ui-font: var(--font-sans);
+  }
+  .dark #buscador {
+    --pagefind-ui-primary: var(--color-brand-400);
+    --pagefind-ui-text: #f4f4f5;
+    --pagefind-ui-background: #18181b;
+    --pagefind-ui-border: #3f3f46;
+    --pagefind-ui-tag: #27272a;
+  }
+</style>

@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CATEGORIES } from '../consts';
+---
+
+<BaseLayout title="Página no encontrada" noindex>
+  <div class="mx-auto max-w-xl py-12 text-center">
+    <p class="font-serif text-7xl font-bold text-brand-700 dark:text-brand-400">404</p>
+    <h1 class="mt-4 text-3xl font-bold">Esta página no existe (o se mudó)</h1>
+    <p class="mt-4 text-zinc-700 dark:text-zinc-300">Prueba con el buscador o explora una categoría:</p>
+    <p class="mt-6">
+      <a href="/buscar" class="rounded-full bg-brand-700 px-5 py-2 font-semibold text-white hover:bg-brand-600">Buscar en el sitio</a>
+    </p>
+    <ul class="mt-8 flex flex-wrap justify-center gap-3">
+      {CATEGORIES.map((c) => <li><a href={`/categoria/${c.slug}`} class="underline hover:text-brand-700">{c.name}</a></li>)}
+    </ul>
+  </div>
+</BaseLayout>

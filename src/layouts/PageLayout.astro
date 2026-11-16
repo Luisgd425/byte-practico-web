@@ -1,0 +1,19 @@
+---
+// Layout para páginas de texto (legales, sobre nosotros). Se usa desde archivos .md con:
+//   layout: ../layouts/PageLayout.astro
+import BaseLayout from './BaseLayout.astro';
+import { formatDate } from '../lib/articles';
+
+interface Props {
+  frontmatter: { title: string; description: string; updated?: string };
+}
+const { title, description, updated } = Astro.props.frontmatter;
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="prose prose-lg prose-zinc mx-auto dark:prose-invert prose-headings:font-serif prose-a:text-brand-700 dark:prose-a:text-brand-400">
+    <h1>{title}</h1>
+    {updated && <p class="text-sm">Última actualización: {formatDate(new Date(updated))}</p>}
+    <slot />
+  </article>
+</BaseLayout>
