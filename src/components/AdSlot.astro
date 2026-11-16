@@ -1,0 +1,49 @@
+---
+// Bloque de anuncio de AdSense reutilizable.
+// - No muestra NADA si falta PUBLIC_ADSENSE_CLIENT o el ID del bloque (slot).
+// - Reserva el alto del anuncio antes de que cargue para no mover el contenido (CLS).
+// - Ubicaciones permitidas (máx. 3 por página): 'top' (debajo del título),
+//   'mid' (a mitad del artículo) y 'sidebar' (solo escritorio).
+interface Props {
+  position: 'top' | 'mid' | 'sidebar';
+}
+const { position } = Astro.props;
+
+const client = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const slots = {
+  top: import.meta.env.PUBLIC_ADSENSE_SLOT_TOP,
+  mid: import.meta.env.PUBLIC_ADSENSE_SLOT_MID,
+  sidebar: import.meta.env.PUBLIC_ADSENSE_SLOT_SIDEBAR,
+};
+const slot = slots[position];
+
+// Alto reservado: anuncios horizontales ~280 px; sidebar 300x600.
+const box = {
+  top: 'my-6 min-h-[280px]',
+  mid: 'my-10 min-h-[280px]',
+  sidebar: 'min-h-[600px] w-[300px]',
+}[position];
+---
+
+{client && slot && (
+  <div class={`not-prose ${box}`} data-pagefind-ignore>
+    <p class="mb-1 text-center text-xs text-zinc-500 dark:text-zinc-400">Publicidad</p>
+    <ins
+      class="adsbygoogle block"
+      data-ad-client={client}
+      data-ad-slot={slot}
+      data-ad-format={position === 'sidebar' ? 'vertical' : 'auto'}
+      data-full-width-responsive={position === 'sidebar' ? 'false' : 'true'}
+    ></ins>
+  </div>
+)}
+
+<script>
+  // Pide un anuncio por cada bloque visible. Los ocultos (sidebar en celular) se saltan
+  // para evitar el error "availableWidth=0" de AdSense.
+  document.querySelectorAll<HTMLElement>('ins.adsbygoogle:not([data-bp-init])').forEach((ins) => {
+    if (ins.offsetWidth === 0) return;
+    ins.dataset.bpInit = '1';
+    ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+  });
+</script>

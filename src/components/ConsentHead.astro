@@ -1,0 +1,61 @@
+---
+// Va en el <head>, ANTES de cualquier script de Google.
+// Google Consent Mode v2: todo empieza denegado hasta que el visitante acepta.
+// GA4 solo se descarga si el visitante acepta las cookies de análisis.
+//
+// Si activas el CMP certificado de Google (AdSense > Privacidad y mensajes),
+// pon PUBLIC_USE_GOOGLE_CMP=true: el CMP de Google gestiona el consentimiento,
+// este script ya no fija valores por defecto y nuestro banner se oculta.
+const gaId = import.meta.env.PUBLIC_GA4_ID ?? '';
+const useGoogleCmp = import.meta.env.PUBLIC_USE_GOOGLE_CMP === 'true';
+---
+
+<script is:inline define:vars={{ gaId, useGoogleCmp }}>
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () {
+    dataLayer.push(arguments);
+  };
+
+  function loadGA() {
+    if (!gaId || window.__bpGaLoaded) return;
+    window.__bpGaLoaded = true;
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + gaId;
+    document.head.appendChild(s);
+    gtag('js', new Date());
+    gtag('config', gaId);
+  }
+
+  if (useGoogleCmp) {
+    loadGA(); // El CMP de Google envía las señales de consentimiento
+  } else {
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+      wait_for_update: 500,
+    });
+    gtag('set', 'ads_data_redaction', true);
+
+    // c = { analytics: boolean, ads: boolean }. La usa el banner de cookies.
+    window.bpApplyConsent = function (c) {
+      const ads = c.ads ? 'granted' : 'denied';
+      gtag('consent', 'update', {
+        ad_storage: ads,
+        ad_user_data: ads,
+        ad_personalization: ads,
+        analytics_storage: c.analytics ? 'granted' : 'denied',
+      });
+      if (c.analytics) loadGA();
+    };
+
+    try {
+      const saved = JSON.parse(localStorage.getItem('bp-consent') || 'null');
+      if (saved) window.bpApplyConsent(saved);
+    } catch (e) {
+      /* preferencia guardada dañada: se vuelve a preguntar */
+    }
+  }
+</script>

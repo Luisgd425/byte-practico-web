@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NewsletterForm from '../components/NewsletterForm.astro';
+import { SITE } from '../consts';
+
+const benefits = [
+  { title: '5 noticias, 5 minutos', text: 'Solo lo que importa de IA y tecnología, sin tener que leer 20 sitios en inglés.' },
+  { title: 'Por qué te importa', text: 'Cada noticia explica qué significa para tu trabajo, tus estudios o tu bolsillo.' },
+  { title: 'Con fuentes', text: 'Enlace a la fuente original en cada noticia, para que verifiques y profundices.' },
+  { title: 'Gratis y sin spam', text: 'Un correo cada mañana de lunes a viernes. Te das de baja con un clic.' },
+];
+---
+
+<BaseLayout
+  title="Newsletter diaria de tecnología e IA"
+  description={`Suscríbete gratis a la newsletter de ${SITE.name}: las 5 noticias de tecnología e IA más importantes del día, explicadas en español en 5 minutos.`}
+>
+  <section class="mx-auto max-w-3xl text-center">
+    <p class="text-sm font-semibold tracking-wide text-brand-700 uppercase dark:text-brand-400">Newsletter gratuita</p>
+    <h1 class="mt-2 text-4xl font-bold sm:text-5xl">La IA cambia cada día. Entérate en 5 minutos.</h1>
+    <p class="mt-4 text-lg text-zinc-700 dark:text-zinc-300">
+      Cada mañana te enviamos las noticias de tecnología e inteligencia artificial que de verdad importan, explicadas en
+      español y con lo que puedes hacer con ellas.
+    </p>
+    <div class="mt-8 flex justify-center">
+      <NewsletterForm compact={false} />
+    </div>
+  </section>
+
+  <section aria-labelledby="beneficios" class="mx-auto mt-16 max-w-4xl">
+    <h2 id="beneficios" class="text-center text-2xl font-bold">Qué recibes</h2>
+    <ul class="mt-6 grid gap-6 sm:grid-cols-2">
+      {benefits.map((b) => (
+        <li class="rounded-lg border border-zinc-200 p-5 dark:border-zinc-800">
+          <p class="font-serif text-lg font-semibold">{b.title}</p>
+          <p class="mt-1 text-zinc-700 dark:text-zinc-300">{b.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section aria-labelledby="ejemplo" class="mx-auto mt-16 max-w-2xl">
+    <h2 id="ejemplo" class="text-center text-2xl font-bold">Así se ve una edición</h2>
+    <!-- Edición de ejemplo ilustrativa. Cámbiala por una edición real cuando tengas la primera. -->
+    <div class="mt-6 rounded-xl border border-zinc-200 bg-zinc-50 p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+      <p class="text-sm text-zinc-600 dark:text-zinc-400">Edición de ejemplo</p>
+      <p class="mt-1 font-serif text-xl font-bold">☕ Byte Práctico · Lo de hoy en IA</p>
+      <p class="mt-4 text-zinc-700 dark:text-zinc-300">¡Buenos días! Esto es lo que pasó en tecnología mientras dormías:</p>
+
+      <div class="mt-5 border-l-4 border-brand-600 pl-4">
+        <p class="font-semibold">1. Un asistente de IA ahora puede usar tu calendario</p>
+        <p class="mt-1 text-zinc-700 dark:text-zinc-300">
+          Resumen de 2-3 frases con lo esencial de la noticia, escrito con nuestras palabras.
+        </p>
+        <p class="mt-2 text-zinc-700 dark:text-zinc-300">
+          <strong>¿Por qué importa?</strong> Una frase sobre cómo te afecta y qué puedes hacer hoy.
+        </p>
+        <p class="mt-1 text-sm text-brand-700 dark:text-brand-400">Fuente: blog oficial →</p>
+      </div>
+
+      <p class="mt-5 text-zinc-600 dark:text-zinc-400">… y 4 noticias más, más la opinión de Luis al final.</p>
+    </div>
+  </section>
+
+  <section class="mx-auto mt-16 max-w-xl text-center">
+    <h2 class="text-2xl font-bold">Únete gratis</h2>
+    <div class="mt-4 flex justify-center"><NewsletterForm /></div>
+    <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+      Usamos beehiiv para enviar la newsletter. Lee nuestra <a href="/politica-de-privacidad" class="underline">política de privacidad</a>.
+    </p>
+  </section>
+</BaseLayout>

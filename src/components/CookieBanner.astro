@@ -1,0 +1,88 @@
+---
+// Aviso de cookies propio. No se muestra si usas el CMP de Google (PUBLIC_USE_GOOGLE_CMP=true).
+// La decisión se guarda en localStorage ("bp-consent") y se aplica con window.bpApplyConsent (ver ConsentHead).
+if (import.meta.env.PUBLIC_USE_GOOGLE_CMP === 'true') return;
+const btn = 'rounded-full px-4 py-2 text-sm font-semibold';
+---
+
+<div
+  id="cookie-banner"
+  role="region"
+  aria-label="Aviso de cookies"
+  hidden
+  class="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-200 bg-white p-4 shadow-2xl dark:border-zinc-800 dark:bg-zinc-900"
+>
+  <div class="mx-auto max-w-4xl">
+    <p class="text-sm text-zinc-800 dark:text-zinc-200">
+      Usamos cookies propias y de terceros (Google Analytics y Google AdSense) para medir visitas y mostrar anuncios
+      que mantienen el sitio gratis. Puedes aceptarlas, rechazarlas o elegir.{' '}<a href="/politica-de-cookies" class="underline">Más información</a>.
+    </p>
+
+    <fieldset id="cookie-options" hidden class="mt-3 space-y-2 text-sm">
+      <legend class="sr-only">Elige qué cookies aceptas</legend>
+      <label class="flex items-start gap-2">
+        <input type="checkbox" checked disabled class="mt-1" />
+        <span><strong>Necesarias</strong>: recuerdan tu elección y tu tema. Siempre activas.</span>
+      </label>
+      <label class="flex items-start gap-2">
+        <input type="checkbox" id="consent-analytics" class="mt-1" />
+        <span><strong>Análisis</strong>: Google Analytics, para saber qué contenido es útil.</span>
+      </label>
+      <label class="flex items-start gap-2">
+        <input type="checkbox" id="consent-ads" class="mt-1" />
+        <span><strong>Publicidad</strong>: Google AdSense y sus socios, para anuncios personalizados.</span>
+      </label>
+    </fieldset>
+
+    <div class="mt-3 flex flex-wrap gap-2">
+      <button type="button" data-consent="all" class={`${btn} bg-brand-700 text-white hover:bg-brand-600`}>Aceptar todas</button>
+      <button type="button" data-consent="none" class={`${btn} border border-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800`}>Rechazar</button>
+      <button type="button" data-consent="config" class={`${btn} underline`}>Configurar</button>
+      <button type="button" data-consent="save" hidden class={`${btn} border border-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800`}>Guardar selección</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const banner = document.getElementById('cookie-banner')!;
+  const options = document.getElementById('cookie-options')!;
+  const analytics = document.getElementById('consent-analytics') as HTMLInputElement;
+  const ads = document.getElementById('consent-ads') as HTMLInputElement;
+  const saveBtn = banner.querySelector<HTMLButtonElement>('[data-consent="save"]')!;
+
+  type Consent = { analytics: boolean; ads: boolean };
+
+  function save(c: Consent) {
+    localStorage.setItem('bp-consent', JSON.stringify(c));
+    (window as any).bpApplyConsent?.(c);
+    banner.hidden = true;
+  }
+
+  function open() {
+    const saved: Consent | null = JSON.parse(localStorage.getItem('bp-consent') || 'null');
+    analytics.checked = !!saved?.analytics;
+    ads.checked = !!saved?.ads;
+    banner.hidden = false;
+  }
+
+  banner.addEventListener('click', (e) => {
+    const action = (e.target as HTMLElement).closest('button')?.dataset.consent;
+    if (action === 'all') save({ analytics: true, ads: true });
+    if (action === 'none') save({ analytics: false, ads: false });
+    if (action === 'save') save({ analytics: analytics.checked, ads: ads.checked });
+    if (action === 'config') {
+      options.hidden = false;
+      saveBtn.hidden = false;
+      analytics.focus();
+    }
+  });
+
+  // Enlace "Preferencias de cookies" del pie de página
+  document.getElementById('open-cookie-prefs')?.addEventListener('click', () => {
+    open();
+    options.hidden = false;
+    saveBtn.hidden = false;
+  });
+
+  if (!localStorage.getItem('bp-consent')) open();
+</script>

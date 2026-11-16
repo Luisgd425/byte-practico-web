@@ -2,6 +2,8 @@
 import { SITE, SOCIAL, CATEGORIES, LEGAL_LINKS } from '../consts';
 
 const year = new Date().getFullYear();
+// Con el CMP de Google, el enlace para cambiar el consentimiento lo pone Google.
+const useGoogleCmp = import.meta.env.PUBLIC_USE_GOOGLE_CMP === 'true';
 const linkClass = 'hover:text-brand-700 hover:underline dark:hover:text-brand-400';
 ---
 
@@ -27,6 +29,9 @@ const linkClass = 'hover:text-brand-700 hover:underline dark:hover:text-brand-40
         <li><a href="/newsletter" class={linkClass}>Newsletter</a></li>
         <li><a href="/rss.xml" class={linkClass}>RSS</a></li>
         {LEGAL_LINKS.map((l) => <li><a href={l.href} class={linkClass}>{l.name}</a></li>)}
+        {!useGoogleCmp && (
+          <li><button type="button" id="open-cookie-prefs" class={`${linkClass} cursor-pointer`}>Preferencias de cookies</button></li>
+        )}
       </ul>
     </nav>
 

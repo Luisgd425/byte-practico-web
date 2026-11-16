@@ -1,5 +1,7 @@
 ---
-// Caja de suscripción. En la Fase 3 el botón se cambia por el formulario de beehiiv.
+// Caja de suscripción para el inicio y los artículos.
+import NewsletterForm from './NewsletterForm.astro';
+
 interface Props {
   title?: string;
 }
@@ -9,15 +11,11 @@ const { title = 'Recibe lo más importante de tecnología e IA cada mañana' } =
 <aside
   class="not-prose my-10 rounded-xl border border-brand-600/30 bg-brand-500/5 p-6 dark:border-brand-400/30 dark:bg-brand-400/5"
   aria-label="Suscripción a la newsletter"
+  data-pagefind-ignore
 >
   <p class="font-serif text-xl font-bold">{title}</p>
-  <p class="mt-2 text-zinc-700 dark:text-zinc-300">
+  <p class="mt-2 mb-4 text-zinc-700 dark:text-zinc-300">
     5 noticias explicadas en 5 minutos, con por qué te importan. Gratis y sin spam.
   </p>
-  <a
-    href="/newsletter"
-    class="mt-4 inline-block rounded-full bg-brand-700 px-5 py-2 font-semibold text-white hover:bg-brand-600"
-  >
-    Suscribirme gratis
-  </a>
+  <NewsletterForm />
 </aside>

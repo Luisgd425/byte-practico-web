@@ -4,6 +4,8 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import NewsletterBox from '../../components/NewsletterBox.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import Mitad from '../../components/Mitad.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
 import { SITE } from '../../consts';
 import { getArticles, categoryName, formatDate, readingTime } from '../../lib/articles';
@@ -54,8 +56,7 @@ const jsonLd = [
 ];
 
 // Lo que se inserta donde el artículo escribe <Mitad /> (en archivos .mdx).
-// En la Fase 3 se añade aquí también el anuncio de mitad de contenido.
-const components = { Mitad: NewsletterBox };
+const components = { Mitad };
 ---
 
 <BaseLayout title={data.title} description={data.description} image={ogImage} type="article" noindex={data.draft} jsonLd={jsonLd}>
@@ -82,7 +83,8 @@ const components = { Mitad: NewsletterBox };
         </p>
       </header>
 
-      <!-- Fase 3: aquí va el anuncio "debajo del título" -->
+      <!-- Anuncio 1 de 3: debajo del título -->
+      <AdSlot position="top" />
 
       {data.heroImage && (
         <figure class="mt-8">
@@ -138,7 +140,8 @@ const components = { Mitad: NewsletterBox };
             </ol>
           </nav>
         )}
-        <!-- Fase 3: aquí va el anuncio del sidebar -->
+        <!-- Anuncio 3 de 3: sidebar (solo escritorio). El 2 está en <Mitad />. -->
+        <AdSlot position="sidebar" />
       </div>
     </aside>
   </div>

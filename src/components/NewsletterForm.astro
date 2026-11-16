@@ -1,0 +1,35 @@
+---
+// Formulario de suscripción de beehiiv (iframe embebido).
+// PUBLIC_BEEHIIV_EMBED_URL = la URL del "src" del embed que te da beehiiv
+// (Audience > Subscribe forms > Embed), por ejemplo https://embeds.beehiiv.com/xxxxxxxx
+// Si está vacía, se muestra un botón que lleva a /newsletter.
+interface Props {
+  compact?: boolean; // Versión de una línea (correo + botón)
+}
+const { compact = true } = Astro.props;
+const embed = import.meta.env.PUBLIC_BEEHIIV_EMBED_URL;
+
+let src = '';
+if (embed) {
+  const url = new URL(embed);
+  if (compact) url.searchParams.set('slim', 'true');
+  src = url.href;
+}
+---
+
+{src ? (
+  <iframe
+    src={src}
+    title="Formulario de suscripción a la newsletter de Byte Práctico"
+    loading="lazy"
+    scrolling="no"
+    class={`w-full max-w-md rounded-md border-0 bg-transparent ${compact ? 'h-[52px]' : 'h-[320px]'}`}
+  ></iframe>
+) : (
+  <a
+    href="/newsletter"
+    class="inline-block rounded-full bg-brand-700 px-5 py-2 font-semibold text-white hover:bg-brand-600"
+  >
+    Suscribirme gratis
+  </a>
+)}
