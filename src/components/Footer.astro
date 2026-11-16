@@ -1,0 +1,45 @@
+---
+import { SITE, SOCIAL, CATEGORIES, LEGAL_LINKS } from '../consts';
+
+const year = new Date().getFullYear();
+const linkClass = 'hover:text-brand-700 hover:underline dark:hover:text-brand-400';
+---
+
+<footer class="mt-16 border-t border-zinc-200 bg-zinc-50 text-sm text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
+  <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
+    <div>
+      <p class="font-serif text-lg font-bold text-zinc-900 dark:text-zinc-100">{SITE.name}</p>
+      <p class="mt-2">{SITE.description}</p>
+    </div>
+
+    <nav aria-label="Categorías del pie de página">
+      <h2 class="font-sans font-semibold text-zinc-900 dark:text-zinc-100">Categorías</h2>
+      <ul class="mt-2 space-y-1">
+        {CATEGORIES.map((c) => <li><a href={`/categoria/${c.slug}`} class={linkClass}>{c.name}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Información">
+      <h2 class="font-sans font-semibold text-zinc-900 dark:text-zinc-100">Información</h2>
+      <ul class="mt-2 space-y-1">
+        <li><a href="/sobre-nosotros" class={linkClass}>Sobre nosotros</a></li>
+        <li><a href="/contacto" class={linkClass}>Contacto</a></li>
+        <li><a href="/newsletter" class={linkClass}>Newsletter</a></li>
+        <li><a href="/rss.xml" class={linkClass}>RSS</a></li>
+        {LEGAL_LINKS.map((l) => <li><a href={l.href} class={linkClass}>{l.name}</a></li>)}
+      </ul>
+    </nav>
+
+    <nav aria-label="Redes sociales">
+      <h2 class="font-sans font-semibold text-zinc-900 dark:text-zinc-100">Síguenos</h2>
+      <ul class="mt-2 space-y-1">
+        {SOCIAL.map((s) => (
+          <li><a href={s.url} class={linkClass} rel="me noopener" target="_blank">{s.name} @bytepractico</a></li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+  <p class="border-t border-zinc-200 py-4 text-center dark:border-zinc-800">
+    © {year} {SITE.name}. Todos los derechos reservados.
+  </p>
+</footer>

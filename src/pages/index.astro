@@ -1,0 +1,25 @@
+---
+// Inicio provisional. En la Fase 2 se reemplaza por: destacado, últimos artículos, newsletter y categorías.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CATEGORIES } from '../consts';
+---
+
+<BaseLayout>
+  <section class="py-12">
+    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Tecnología e IA, explicadas para usarlas hoy</h1>
+    <p class="mt-4 max-w-2xl text-lg text-zinc-700 dark:text-zinc-300">
+      Noticias y guías prácticas en español. Sin humo, con ejemplos reales.
+    </p>
+  </section>
+  <section aria-labelledby="cats">
+    <h2 id="cats" class="text-2xl font-bold">Categorías</h2>
+    <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {CATEGORIES.map((c) => (
+        <li class="rounded-lg border border-zinc-200 p-5 dark:border-zinc-800">
+          <a href={`/categoria/${c.slug}`} class="font-serif text-xl font-semibold hover:text-brand-700 dark:hover:text-brand-400">{c.name}</a>
+          <p class="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{c.description}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+</BaseLayout>

@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Tipografías alojadas en el propio sitio (más rápido y sin cookies de terceros) */
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/source-serif-4";
+
+/* El modo oscuro se activa con la clase .dark en <html> (la pone el script del layout) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, serif;
+
+  /* Color de marca. Contraste AA comprobado: brand-700 sobre blanco y brand-400 sobre zinc-950 */
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #2563eb;
+  --color-brand-700: #1d4ed8;
+}
+
+@layer base {
+  html {
+    @apply bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+    color-scheme: light;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  h1, h2, h3 {
+    @apply font-serif;
+  }
+  /* Foco visible para quien navega con teclado */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-600 dark:outline-brand-400;
+  }
+}
