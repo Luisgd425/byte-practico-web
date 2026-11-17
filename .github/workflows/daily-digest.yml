@@ -17,7 +17,6 @@ on:
 permissions:
   contents: write # subir la rama del borrador
   pull-requests: write # abrir el PR
-  models: read # GitHub Models (gratis)
 
 concurrency: daily-digest
 
@@ -54,9 +53,9 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: npm run digest
         env:
-          # Si algún día creas el secret ANTHROPIC_API_KEY, se usa Claude; si no, GitHub Models gratis.
+          # Secret GEMINI_API_KEY = gratis. Si algún día creas ANTHROPIC_API_KEY, se usa Claude.
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Abrir Pull Request
         if: steps.gate.outputs.run == 'true'

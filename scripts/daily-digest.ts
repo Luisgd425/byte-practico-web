@@ -8,7 +8,7 @@
 //
 // Modelo de IA (el primero que tenga credencial):
 //   1. ANTHROPIC_API_KEY -> Claude (de pago, por uso)
-//   2. GITHUB_TOKEN      -> GitHub Models (gratis con límites). En GitHub Actions ya viene incluido.
+//   2. GEMINI_API_KEY    -> Gemini de Google (plan gratis con límites, sin tarjeta)
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import Anthropic from '@anthropic-ai/sdk';
 import Parser from 'rss-parser';
@@ -86,33 +86,33 @@ async function askClaude(): Promise<string> {
   return msg.content.flatMap((b) => (b.type === 'text' ? [b.text] : [])).join('');
 }
 
-async function askGitHubModels(): Promise<string> {
-  const res = await fetch('https://models.github.ai/inference/chat/completions', {
+async function askGemini(): Promise<string> {
+  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+    headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY!, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: process.env.GITHUB_MODEL || 'openai/gpt-4.1',
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user },
-      ],
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      generationConfig: { responseMimeType: 'application/json' },
     }),
   });
-  if (!res.ok) throw new Error(`GitHub Models respondió ${res.status}: ${await res.text()}`);
-  const data = (await res.json()) as { choices: { message: { content: string } }[] };
-  return data.choices[0].message.content;
+  if (!res.ok) throw new Error(`Gemini respondió ${res.status}: ${await res.text()}`);
+  const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('');
+  if (!text) throw new Error(`Gemini no devolvió texto: ${JSON.stringify(data).slice(0, 300)}`);
+  return text;
 }
 
 let text: string;
 if (process.env.ANTHROPIC_API_KEY) {
   console.log('Usando Claude…');
   text = await askClaude();
-} else if (process.env.GITHUB_TOKEN) {
-  console.log('Usando GitHub Models (gratis)…');
-  text = await askGitHubModels();
+} else if (process.env.GEMINI_API_KEY) {
+  console.log('Usando Gemini (gratis)…');
+  text = await askGemini();
 } else {
-  console.error('Falta ANTHROPIC_API_KEY o GITHUB_TOKEN en el archivo .env (ver .env.example).');
+  console.error('Falta GEMINI_API_KEY (gratis) o ANTHROPIC_API_KEY en el archivo .env (ver .env.example).');
   process.exit(1);
 }
 

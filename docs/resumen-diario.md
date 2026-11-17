@@ -11,36 +11,36 @@ Los enlaces a las fuentes salen de los feeds, no de la IA, así que no puede inv
 
 ## Costo
 
-- **Gratis:** GitHub Models con `GITHUB_TOKEN`. Tiene límite de peticiones por día, y una al día queda muy por debajo.
-- **De pago:** Claude con `ANTHROPIC_API_KEY`. Se usa automáticamente si la clave existe.
+- **Gratis:** Gemini de Google con `GEMINI_API_KEY`, sin tarjeta. Tiene límite de peticiones por día, y una al día queda muy por debajo. A cambio, Google puede usar lo que le envías para mejorar sus productos. Aquí solo se envían titulares públicos de noticias, nada personal.
+- **De pago:** Claude con `ANTHROPIC_API_KEY`. Si la clave existe, se usa en lugar de Gemini.
 
 ## Correrlo en tu computadora
 
-1. Crea un token gratuito en GitHub: **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
-   - Expiración: la que prefieras.
-   - **Permissions → Models: Read-only**. Nada más.
-2. Pega el token en `.env` como `GITHUB_TOKEN=...`.
-3. Corre:
+1. Entra a [aistudio.google.com](https://aistudio.google.com) con tu cuenta de Google.
+2. Haz clic en **Get API key** y luego en **Create API key**. Copia la clave.
+3. Pégala en `.env` como `GEMINI_API_KEY=...`, sin espacios ni comillas.
+4. Corre:
 
    ```bash
    npm run digest
    ```
 
-4. Abre `npm run dev`: en local, los borradores sí se ven.
+5. Abre `npm run dev`: en local, los borradores sí se ven.
 
 Si quieres regenerar el del día, corre `npm run digest -- --force`.
 
 ## Automático cada mañana (GitHub Actions)
 
-El archivo `.github/workflows/daily-digest.yml` corre todos los días a las 6:00 a. m. de Ciudad Juárez. Genera el borrador y abre un Pull Request. No necesita ningún token tuyo: usa el de GitHub Actions.
+El archivo `.github/workflows/daily-digest.yml` corre todos los días a las 6:00 a. m. de Ciudad Juárez. Genera el borrador y abre un Pull Request.
 
 Una sola vez, después de subir el proyecto a GitHub (fase 5):
 
-1. En tu repositorio ve a **Settings → Actions → General**.
-2. En **Workflow permissions**, marca **Read and write permissions**.
-3. Marca también **Allow GitHub Actions to create and approve pull requests**.
-4. Guarda.
-5. Para probarlo, ve a **Actions → Resumen diario → Run workflow**.
+1. En tu repositorio ve a **Settings → Secrets and variables → Actions → New repository secret**. Nombre: `GEMINI_API_KEY`. Valor: tu clave de Gemini.
+2. Ve a **Settings → Actions → General**.
+3. En **Workflow permissions**, marca **Read and write permissions**.
+4. Marca también **Allow GitHub Actions to create and approve pull requests**.
+5. Guarda.
+6. Para probarlo, ve a **Actions → Resumen diario → Run workflow**.
 
 ## Revisar y publicar el borrador
 
