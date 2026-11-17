@@ -11,7 +11,7 @@ En **Byte Práctico** (en adelante, "el sitio") respetamos tu privacidad. Esta p
 
 ## Responsable
 
-El responsable del tratamiento es Luis, creador de Byte Práctico, con domicilio en México. Contacto: [contacto@bytepractico.com](mailto:contacto@bytepractico.com).
+El responsable del tratamiento es Luis, creador de Byte Práctico, con domicilio en México. Contacto: [iaxpress3.1415@gmail.com](mailto:iaxpress3.1415@gmail.com).
 
 ## Qué datos recopilamos
 
@@ -67,7 +67,7 @@ Los servicios mencionados pueden tratar datos fuera de México (por ejemplo, en 
 
 ## Tus derechos (ARCO)
 
-Puedes **acceder**, **rectificar**, **cancelar** u **oponerte** al tratamiento de tus datos, así como retirar tu consentimiento, escribiendo a [contacto@bytepractico.com](mailto:contacto@bytepractico.com). Responderemos en un máximo de 20 días hábiles. Si estás en la Unión Europea, también tienes derecho a la portabilidad y a presentar una reclamación ante tu autoridad de protección de datos.
+Puedes **acceder**, **rectificar**, **cancelar** u **oponerte** al tratamiento de tus datos, así como retirar tu consentimiento, escribiendo a [iaxpress3.1415@gmail.com](mailto:iaxpress3.1415@gmail.com). Responderemos en un máximo de 20 días hábiles. Si estás en la Unión Europea, también tienes derecho a la portabilidad y a presentar una reclamación ante tu autoridad de protección de datos.
 
 ## Menores de edad
 

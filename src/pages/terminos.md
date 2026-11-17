@@ -43,4 +43,4 @@ Podemos cambiar estos términos. La versión vigente es siempre la publicada en 
 
 Estos términos se rigen por las leyes de México.
 
-Contacto: [contacto@bytepractico.com](mailto:contacto@bytepractico.com).
+Contacto: [iaxpress3.1415@gmail.com](mailto:iaxpress3.1415@gmail.com).

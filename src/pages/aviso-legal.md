@@ -10,7 +10,7 @@ updated: 2026-11-16
 - **Nombre del sitio:** Byte Práctico
 - **Titular:** Luis <!-- EDITA: añade tu nombre completo si quieres mayor transparencia -->
 - **País:** México
-- **Contacto:** [contacto@bytepractico.com](mailto:contacto@bytepractico.com)
+- **Contacto:** [iaxpress3.1415@gmail.com](mailto:iaxpress3.1415@gmail.com)
 - **Redes:** @bytepractico en [Instagram](https://www.instagram.com/bytepractico), [Facebook](https://www.facebook.com/bytepractico) y [YouTube](https://www.youtube.com/@bytepractico)
 
 ## Objeto
