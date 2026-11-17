@@ -1,0 +1,15 @@
+{
+  "_comentario": "Fuentes del resumen diario. Agrega o quita feeds RSS/Atom. Anthropic y Meta AI no publican RSS oficial: se usan búsquedas de Google News limitadas a su dominio (el enlace pasa por news.google.com y redirige al artículo original).",
+  "sources": [
+    { "name": "OpenAI", "url": "https://openai.com/news/rss.xml" },
+    { "name": "Anthropic", "url": "https://news.google.com/rss/search?q=site:anthropic.com+when:2d&hl=en-US&gl=US&ceid=US:en" },
+    { "name": "Google AI", "url": "https://blog.google/technology/ai/rss/" },
+    { "name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml" },
+    { "name": "Meta AI", "url": "https://news.google.com/rss/search?q=site:ai.meta.com+when:2d&hl=en-US&gl=US&ceid=US:en" },
+    { "name": "Hugging Face", "url": "https://huggingface.co/blog/feed.xml" },
+    { "name": "The Verge", "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml" },
+    { "name": "TechCrunch", "url": "https://techcrunch.com/category/artificial-intelligence/feed/" },
+    { "name": "Xataka", "url": "https://www.xataka.com/index.xml" },
+    { "name": "Hipertextual", "url": "https://hipertextual.com/feed" }
+  ]
+}

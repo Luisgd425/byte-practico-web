@@ -1,0 +1,82 @@
+# Genera cada mañana el BORRADOR del resumen diario y abre un Pull Request para que Luis lo revise.
+# Nunca publica: el sitio solo cambia cuando tú apruebas (merge) el PR y pones draft: false.
+#
+# Hora: 6:00 a. m. de Ciudad Juárez. GitHub usa UTC y Ciudad Juárez cambia de horario
+# (verano UTC-6, invierno UTC-7), así que corre a las 12:00 y 13:00 UTC y solo trabaja
+# la primera vez que ya son las 6 o más en Ciudad Juárez.
+#
+# También puedes lanzarlo a mano: pestaña Actions > "Resumen diario" > Run workflow.
+name: Resumen diario
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write # subir la rama del borrador
+  pull-requests: write # abrir el PR
+  models: read # GitHub Models (gratis)
+
+concurrency: daily-digest
+
+jobs:
+  digest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: ¿Toca correr ahora?
+        id: gate
+        run: |
+          D=$(TZ=America/Ciudad_Juarez date +%F)
+          H=$(TZ=America/Ciudad_Juarez date +%-H)
+          echo "date=$D" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$H" -lt 6 ]; then
+            echo "Son las $H en Ciudad Juárez; aún no toca."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          if git ls-remote --exit-code --heads origin "digest/$D" > /dev/null; then
+            echo "El borrador de $D ya existe."; echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v5
+        if: steps.gate.outputs.run == 'true'
+        with:
+          node-version: 24
+          cache: npm
+
+      - if: steps.gate.outputs.run == 'true'
+        run: npm ci
+
+      - name: Generar borrador
+        if: steps.gate.outputs.run == 'true'
+        run: npm run digest
+        env:
+          # Si algún día creas el secret ANTHROPIC_API_KEY, se usa Claude; si no, GitHub Models gratis.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Abrir Pull Request
+        if: steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          D: ${{ steps.gate.outputs.date }}
+        run: |
+          git add src/content/borradores newsletter
+          if git diff --cached --quiet; then echo "No hubo borrador nuevo."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "digest/$D"
+          git commit -m "Borrador del resumen diario $D"
+          git push origin "digest/$D"
+          gh pr create --base "${{ github.event.repository.default_branch }}" \
+            --title "Resumen diario $D (borrador)" \
+            --body "Borrador generado automáticamente. Antes de aprobar:
+          - [ ] Verifiqué cada noticia en su fuente original
+          - [ ] Añadí mi opinión o experiencia
+          - [ ] Cambié \`draft: true\` por \`draft: false\` (o lo dejo como borrador)
+          - [ ] Copié \`newsletter/$D.html\` a beehiiv
+
+          Si no te sirve, cierra el PR sin aprobarlo y borra la rama."

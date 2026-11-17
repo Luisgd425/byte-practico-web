@@ -8,7 +8,7 @@ export const SITE = {
   locale: 'es_MX',
   lang: 'es',
   // TODO: cambia por un correo real que revises (puede ser un Gmail gratuito creado para el proyecto)
-  email: 'contacto@bytepractico.com',
+  email: 'iaxpress3.1415@gmail.com',
   country: 'México',
 } as const;
 

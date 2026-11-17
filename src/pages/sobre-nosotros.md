@@ -4,39 +4,34 @@ title: Sobre Byte Práctico
 description: Quién escribe Byte Práctico, por qué existe y cómo trabajamos para que cada artículo sea útil, verificado y honesto.
 ---
 
-<!--
-  EDITA esta página con tus datos reales antes de pedir AdSense.
-  Google valora que se vea una persona real con experiencia (E-E-A-T).
-  Busca los textos entre [corchetes] y reemplázalos.
--->
+**La tecnología solo vale la pena si te sirve en la vida real.**
 
-## Hola, soy Luis
+Byte Práctico nació con una idea sencilla: explicar la inteligencia artificial y la tecnología en español, sin tecnicismos innecesarios y con un enfoque práctico. Aquí no encontrarás promesas mágicas ni listas infladas de herramientas que nadie usa. Encontrarás lo que de verdad te ahorra tiempo, te ayuda a aprender o mejora tu trabajo.
 
-Soy el creador de **Byte Práctico**. [EDITA: 2-3 frases sobre ti. Ejemplo: a qué te dedicas, desde cuándo usas herramientas de IA en tu día a día y qué tipo de problemas resuelves con ellas.]
+## ¿Quién está detrás?
 
-Empecé Byte Práctico en redes sociales (@bytepractico en Instagram, Facebook y YouTube Shorts) compartiendo trucos cortos de tecnología. Este sitio es el siguiente paso: un lugar donde explicar con calma lo que en un video de 60 segundos no cabe.
+Soy Luis, creador de Byte Práctico. Trabajo como líder de calidad en la industria manufacturera y estudio Ingeniería Industrial con enfoque en calidad y productividad. Mi día a día consiste en resolver problemas, mejorar procesos y buscar formas más eficientes de hacer las cosas.
 
-## Nuestra misión
+Ese mismo enfoque lo aplico a la tecnología. Pruebo las herramientas de IA en situaciones reales (en el trabajo, en la universidad y en la creación de contenido) antes de recomendarlas. Si algo no funciona o no vale lo que cuesta, te lo voy a decir.
 
-La tecnología y la inteligencia artificial cambian cada semana, y casi toda la información buena está en inglés o llena de tecnicismos. Byte Práctico existe para:
+## Qué vas a encontrar aquí
 
-- **Traducir lo importante**: qué cambió, por qué importa y qué puedes hacer con eso hoy.
-- **Probar antes de recomendar**: cuando hablamos de una herramienta, es porque la usamos.
-- **Ahorrarte tiempo**: guías paso a paso, sin relleno.
+- [Noticias de IA y tecnología](/categoria/noticias-ia) explicadas en pocas líneas, con el porqué de cada una.
+- [Tutoriales](/categoria/tutoriales) paso a paso para usar herramientas como Claude, ChatGPT o Gemini.
+- [Guías de productividad](/categoria/productividad) para estudiantes y profesionales.
+- Reseñas honestas de [apps](/categoria/herramientas-ia) y [gadgets](/categoria/gadgets).
 
-## Cómo trabajamos
+## Nuestro compromiso
 
-- **Fuentes primero.** Cada noticia enlaza a la fuente original (blogs oficiales de las empresas, documentación y medios reconocidos).
-- **Revisión humana siempre.** Usamos herramientas de IA para ayudarnos a resumir y organizar información, pero cada artículo lo revisa, edita y aprueba una persona antes de publicarse. Nada se publica de forma automática.
-- **Experiencia propia.** En las guías y reseñas contamos qué nos funcionó y qué no.
-- **Correcciones a la vista.** Si encontramos un error, lo corregimos y actualizamos la fecha del artículo. Si ves uno, [escríbenos](/contacto).
-- **Independencia.** Los anuncios nos permiten mantener el sitio gratis, pero no influyen en lo que recomendamos. Si algún día un artículo incluye enlaces de afiliado o patrocinio, lo diremos claramente.
+- Citamos siempre las fuentes originales.
+- Revisamos personalmente cada artículo antes de publicarlo.
+- Si una recomendación cambia o una información queda desactualizada, la corregimos.
+- Este sitio se mantiene gracias a anuncios. Ningún anunciante influye en nuestras opiniones.
 
-## Síguenos
+## Únete a la comunidad
 
-- Instagram: [@bytepractico](https://www.instagram.com/bytepractico)
-- Facebook: [@bytepractico](https://www.facebook.com/bytepractico)
-- YouTube: [@bytepractico](https://www.youtube.com/@bytepractico)
-- Newsletter diaria: [suscríbete gratis](/newsletter)
+📩 **Newsletter diaria:** recibe cada mañana lo más importante de tecnología e IA en 5 minutos de lectura. [Suscríbete aquí](/newsletter).
 
-¿Tienes una pregunta, una corrección o una idea para un artículo? [Contáctanos](/contacto).
+📱 Sígueme como @bytepractico en [Instagram](https://www.instagram.com/bytepractico), [Facebook](https://www.facebook.com/bytepractico) y [YouTube Shorts](https://www.youtube.com/@bytepractico).
+
+✉️ ¿Tienes una pregunta, sugerencia o propuesta? Escríbeme desde la [página de contacto](/contacto).
