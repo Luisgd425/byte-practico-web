@@ -86,22 +86,49 @@ async function askClaude(): Promise<string> {
   return msg.content.flatMap((b) => (b.type === 'text' ? [b.text] : [])).join('');
 }
 
+// Modelos gratis en orden de preferencia. El plan gratis a veces está saturado (503) o tarda
+// sin responder, así que se prueba el siguiente. GEMINI_MODEL, si existe, va primero.
+const GEMINI_MODELS = [
+  ...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []),
+  'gemini-3.8-flash',
+  'gemini-3.6-flash',
+  'gemini-3-flash-preview',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
+];
+
 async function askGemini(): Promise<string> {
-  const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-    method: 'POST',
-    headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY!, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents: [{ role: 'user', parts: [{ text: user }] }],
-      generationConfig: { responseMimeType: 'application/json' },
-    }),
-  });
-  if (!res.ok) throw new Error(`Gemini respondió ${res.status}: ${await res.text()}`);
-  const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
-  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('');
-  if (!text) throw new Error(`Gemini no devolvió texto: ${JSON.stringify(data).slice(0, 300)}`);
-  return text;
+  for (const model of new Set(GEMINI_MODELS)) {
+    let res: Response;
+    try {
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST',
+        headers: { 'x-goog-api-key': process.env.GEMINI_API_KEY!, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ role: 'user', parts: [{ text: user }] }],
+          generationConfig: { responseMimeType: 'application/json' },
+        }),
+        signal: AbortSignal.timeout(120_000),
+      });
+    } catch (e) {
+      console.warn(`⚠️  ${model}: sin respuesta (${(e as Error).name}). Probando otro modelo…`);
+      continue;
+    }
+    // 404 = modelo no disponible para tu clave; 429/5xx = límite o saturación: probar el siguiente
+    if (res.status === 404 || res.status === 429 || res.status >= 500) {
+      console.warn(`⚠️  ${model}: HTTP ${res.status}. Probando otro modelo…`);
+      continue;
+    }
+    // Otros errores (clave inválida, API apagada) no se arreglan cambiando de modelo
+    if (!res.ok) throw new Error(`Gemini respondió ${res.status}: ${await res.text()}`);
+    const data = (await res.json()) as { candidates?: { content?: { parts?: { text?: string }[] } }[] };
+    const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('');
+    if (!text) throw new Error(`Gemini (${model}) no devolvió texto: ${JSON.stringify(data).slice(0, 300)}`);
+    console.log(`Modelo usado: ${model}`);
+    return text;
+  }
+  throw new Error('Ningún modelo de Gemini respondió. Google está saturado: intenta más tarde.');
 }
 
 let text: string;
