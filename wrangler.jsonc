@@ -1,0 +1,11 @@
+// Configuración de Cloudflare Workers (sitio estático, plan gratis).
+{
+  "name": "byte-practico", // debe coincidir con el nombre del proyecto en Cloudflare
+  "compatibility_date": "2026-11-17",
+  // npm run build = astro build + índice del buscador (Pagefind)
+  "build": { "command": "npm run build" },
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page" // usa nuestra página 404.html
+  }
+}

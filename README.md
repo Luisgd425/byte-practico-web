@@ -1,8 +1,8 @@
 # Byte Práctico
 
-Sitio de noticias y guías prácticas de tecnología e IA en español. Hecho con Astro y Tailwind, publicado gratis en Cloudflare Pages.
+Sitio de noticias y guías prácticas de tecnología e IA en español. Hecho con Astro y Tailwind, publicado gratis en Cloudflare Workers.
 
-- Sitio: https://byte-practico.pages.dev (cámbialo en `astro.config.mjs` si compras dominio)
+- Sitio: https://byte-practico.lh425x.workers.dev (cámbialo en `astro.config.mjs` si compras dominio)
 - Guía editorial: [docs/guia-editorial.md](docs/guia-editorial.md)
 - Resumen diario automático: [docs/resumen-diario.md](docs/resumen-diario.md)
 
@@ -60,7 +60,7 @@ Los borradores del resumen diario llegan como Pull Request en GitHub. Ver [docs/
 Se configuran en dos lugares con los mismos nombres:
 
 - **Tu computadora:** archivo `.env`.
-- **El sitio publicado:** Cloudflare → Workers & Pages → tu proyecto → Settings → Variables and Secrets. Después de cambiarlas, ve a Deployments y haz **Retry deployment** en el último para que se apliquen.
+- **El sitio publicado:** Cloudflare → Workers & Pages → `byte-practico` → Settings → **Build** → **Variables and secrets** (las de *Build*, no las de *Runtime*: Astro las lee al construir). Después de cambiarlas, ve a Deployments y vuelve a desplegar el último (o haz cualquier push) para que se apliquen.
 
 | Variable | Dónde se obtiene |
 | --- | --- |
@@ -78,9 +78,9 @@ Si una variable está vacía, esa función no se muestra (no hay anuncios, ni fo
 
 ## Checklist antes de solicitar AdSense
 
-AdSense **no acepta subdominios gratuitos** como `byte-practico.pages.dev`: necesitas un dominio propio (desde ~10 USD al año, por ejemplo en Cloudflare Registrar o Porkbun). Mientras, sigue publicando contenido.
+AdSense **no acepta subdominios gratuitos** como `byte-practico.lh425x.workers.dev`: necesitas un dominio propio (desde ~10 USD al año, por ejemplo en Cloudflare Registrar o Porkbun). Mientras, sigue publicando contenido.
 
-- [ ] Dominio propio conectado a Cloudflare Pages (Custom domains) y `site` actualizado en `astro.config.mjs`.
+- [ ] Dominio propio conectado en Cloudflare (Settings → Domains & Routes → Add → Custom domain) y `site` actualizado en `astro.config.mjs`.
 - [ ] Al menos 15–20 artículos originales publicados (`draft: false`), con tu experiencia y fuentes citadas.
 - [ ] Ningún artículo es texto de IA sin revisar.
 - [ ] Páginas completas y con tus datos: Sobre nosotros, Contacto, Política de privacidad, Cookies, Términos y Aviso legal.

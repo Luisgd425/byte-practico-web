@@ -7,8 +7,8 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  // URL pública del sitio (sitemap, canónicas y RSS). Gratis en Cloudflare Pages; cámbiala si compras dominio.
-  site: 'https://byte-practico.pages.dev',
+  // URL pública del sitio (sitemap, canónicas y RSS). Gratis en Cloudflare Workers; cámbiala si compras dominio.
+  site: 'https://byte-practico.lh425x.workers.dev',
   vite: {
     plugins: [tailwindcss()]
   },

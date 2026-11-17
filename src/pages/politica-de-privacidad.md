@@ -49,7 +49,7 @@ Los mensajes del formulario de contacto se envían a través de Formspree, que l
 
 ### Cloudflare (alojamiento)
 
-El sitio se aloja en Cloudflare Pages, que puede procesar tu dirección IP por motivos de seguridad y rendimiento.
+El sitio se aloja en Cloudflare, que puede procesar tu dirección IP por motivos de seguridad y rendimiento.
 
 ## Cookies
 
