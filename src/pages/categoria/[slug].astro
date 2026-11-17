@@ -2,7 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import { CATEGORIES } from '../../consts';
-import { getArticles } from '../../lib/articles';
+import { Image } from 'astro:assets';
+import { getArticles, categoryImage } from '../../lib/articles';
 
 // Genera una página por cada categoría de src/consts.ts
 export function getStaticPaths() {
@@ -11,6 +12,7 @@ export function getStaticPaths() {
 
 const { category } = Astro.props;
 const articles = (await getArticles()).filter((a) => a.data.category === category.slug);
+const banner = categoryImage(category.slug);
 
 const breadcrumb = {
   '@context': 'https://schema.org',
@@ -26,12 +28,29 @@ const breadcrumb = {
   <nav aria-label="Ruta de navegación" class="text-sm text-zinc-600 dark:text-zinc-400">
     <a href="/" class="hover:underline">Inicio</a> / <span aria-current="page">{category.name}</span>
   </nav>
-  <h1 class="mt-2 text-4xl font-bold">{category.name}</h1>
-  <p class="mt-2 text-lg text-zinc-700 dark:text-zinc-300">{category.description}</p>
+  <!-- Encabezado con la foto de la categoría y un velo oscuro para leer el texto -->
+  <header class="relative isolate mt-4 overflow-hidden rounded-3xl px-6 py-14 text-white sm:px-10 sm:py-20">
+    {banner && (
+      <Image
+        src={banner}
+        alt=""
+        widths={[640, 1024, 1600]}
+        sizes="(min-width: 1152px) 1104px, 100vw"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 -z-20 h-full w-full object-cover"
+      />
+    )}
+    <span aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-r from-zinc-950/90 via-brand-700/60 to-accent-700/40"></span>
+    <h1 class="text-4xl font-bold sm:text-5xl">{category.name}</h1>
+    <p class="mt-3 max-w-2xl text-lg text-white/90">{category.description}</p>
+  </header>
 
   {articles.length > 0 ? (
-    <div class="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-      {articles.map((a, i) => <ArticleCard article={a} eager={i === 0} />)}
+    <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {articles.map((a, i) => (
+        <div data-reveal={i < 3 ? undefined : ''} style={`--reveal-delay: ${(i % 3) * 80}ms`}><ArticleCard article={a} /></div>
+      ))}
     </div>
   ) : (
     <p class="mt-10 text-zinc-700 dark:text-zinc-300">Todavía no hay artículos en esta categoría. ¡Vuelve pronto!</p>

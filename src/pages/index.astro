@@ -2,49 +2,145 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import NewsletterBox from '../components/NewsletterBox.astro';
+import { Image } from 'astro:assets';
 import { CATEGORIES } from '../consts';
-import { getArticles } from '../lib/articles';
+import { getArticles, categoryImage } from '../lib/articles';
 
 const articles = await getArticles();
-// Destacado: el más reciente marcado con featured: true; si no hay, el más reciente.
+// Destacado: el más reciente marcado con featured: true; si no hay, el más reciente. Va primero y en grande.
 const featured = articles.find((a) => a.data.featured) ?? articles[0];
-const latest = articles.filter((a) => a !== featured).slice(0, 9);
+const list = featured ? [featured, ...articles.filter((a) => a !== featured)].slice(0, 13) : [];
+
+// Solo se muestran filtros de categorías que tienen artículos
+const counts = new Map<string, number>();
+for (const a of list) counts.set(a.data.category, (counts.get(a.data.category) ?? 0) + 1);
+const filters = CATEGORIES.filter((c) => counts.has(c.slug));
+// En la cuadrícula, el contenedor de cada tarjeta lleva el filtro y la animación de aparición;
+// la tarjeta lleva el efecto al pasar el mouse (así no chocan sus transiciones).
+const chip =
+  'rounded-full border border-zinc-300 px-4 py-1.5 text-sm font-medium transition hover:border-brand-500 hover:text-brand-700 aria-pressed:border-transparent aria-pressed:bg-gradient-to-r aria-pressed:from-brand-700 aria-pressed:to-accent-700 aria-pressed:text-white dark:border-zinc-700 dark:hover:text-brand-400 dark:aria-pressed:text-white';
 ---
 
 <BaseLayout>
-  <h1 class="sr-only">Byte Práctico: noticias y guías de tecnología e IA en español</h1>
+  <!-- Portada con degradado animado -->
+  <section
+    class="relative isolate overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-accent-700 to-brand-700 bg-[length:200%_200%] px-6 py-14 text-white shadow-2xl shadow-brand-700/20 motion-safe:animate-gradient sm:px-12 sm:py-20"
+  >
+    <!-- Esferas decorativas que flotan -->
+    <div aria-hidden="true" class="pointer-events-none absolute -top-24 -right-16 -z-10 h-72 w-72 rounded-full bg-white/15 blur-3xl motion-safe:animate-float"></div>
+    <div aria-hidden="true" class="pointer-events-none absolute -bottom-28 left-10 -z-10 h-64 w-64 rounded-full bg-sky-300/20 blur-3xl motion-safe:animate-float [animation-delay:-4s]"></div>
 
-  {featured ? (
-    <section aria-label="Artículo destacado" class="border-b border-zinc-200 pb-10 dark:border-zinc-800">
-      <ArticleCard article={featured} large eager />
-    </section>
-  ) : (
-    <section class="py-12">
-      <p class="font-serif text-4xl font-bold">Tecnología e IA, explicadas para usarlas hoy</p>
-      <p class="mt-4 text-lg text-zinc-700 dark:text-zinc-300">Muy pronto, los primeros artículos.</p>
-    </section>
-  )}
+    <p class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide uppercase ring-1 ring-white/25">
+      <span class="h-2 w-2 rounded-full bg-emerald-300 motion-safe:animate-pulse" aria-hidden="true"></span>
+      Nuevo resumen cada mañana
+    </p>
+    <h1 class="mt-5 max-w-3xl text-4xl leading-tight font-bold sm:text-6xl">
+      Tecnología e IA, explicadas para usarlas hoy
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg text-white/90">
+      Noticias, herramientas y tutoriales probados en el día a día. Sin tecnicismos ni promesas mágicas.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a
+        href="/newsletter"
+        class="rounded-full bg-white px-6 py-3 font-semibold text-brand-700 shadow-lg transition hover:shadow-xl motion-safe:hover:-translate-y-0.5"
+      >Suscríbete gratis</a>
+      <a
+        href="#articulos"
+        class="rounded-full px-6 py-3 font-semibold text-white ring-1 ring-white/50 transition hover:bg-white/10"
+      >Ver artículos ↓</a>
+    </div>
+  </section>
 
-  {latest.length > 0 && (
-    <section aria-labelledby="ultimos" class="py-10">
-      <h2 id="ultimos" class="text-2xl font-bold">Últimos artículos</h2>
-      <div class="mt-6 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-        {latest.map((a) => <ArticleCard article={a} />)}
+  {list.length > 0 ? (
+    <section id="articulos" aria-labelledby="ultimos" class="pt-14">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h2 id="ultimos" class="text-3xl font-bold">Últimos artículos</h2>
+        {filters.length > 1 && (
+          <div role="group" aria-label="Filtrar por categoría" class="flex flex-wrap gap-2" id="filtros">
+            <button type="button" class={chip} data-filter="todos" aria-pressed="true">Todos</button>
+            {filters.map((c) => (
+              <button type="button" class={chip} data-filter={c.slug} aria-pressed="false">
+                {c.name} <span class="opacity-70">{counts.get(c.slug)}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      <p id="filtro-estado" class="sr-only" aria-live="polite"></p>
+
+      <div class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {list.map((a, i) => (
+          <div
+            data-card
+            data-category={a.data.category}
+            data-reveal={i === 0 ? undefined : ''}
+            style={`--reveal-delay: ${(i % 3) * 80}ms`}
+            class={i === 0 ? 'sm:col-span-2 lg:col-span-3' : undefined}
+          >
+            <ArticleCard article={a} large={i === 0} eager={i === 0} />
+          </div>
+        ))}
       </div>
     </section>
+  ) : (
+    <p class="pt-14 text-lg text-zinc-700 dark:text-zinc-300">Muy pronto, los primeros artículos.</p>
   )}
 
-  <NewsletterBox />
+  <div data-reveal><NewsletterBox /></div>
 
   <section aria-labelledby="cats" class="py-6">
-    <h2 id="cats" class="text-2xl font-bold">Categorías</h2>
-    <ul class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {CATEGORIES.map((c) => (
-        <li class="rounded-lg border border-zinc-200 p-5 dark:border-zinc-800">
-          <a href={`/categoria/${c.slug}`} class="font-serif text-xl font-semibold hover:text-brand-700 dark:hover:text-brand-400">{c.name}</a>
-          <p class="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{c.description}</p>
+    <h2 id="cats" class="text-3xl font-bold">Explora por tema</h2>
+    <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {CATEGORIES.map((c, i) => (
+        <li data-reveal style={`--reveal-delay: ${(i % 3) * 80}ms`}>
+          <a
+            href={`/categoria/${c.slug}`}
+            class="group relative isolate flex h-56 flex-col justify-end overflow-hidden rounded-2xl p-6 text-white shadow-md transition duration-300 hover:shadow-xl hover:shadow-accent-700/20 motion-safe:hover:-translate-y-1"
+          >
+            {categoryImage(c.slug) && (
+              <Image
+                src={categoryImage(c.slug)!}
+                alt=""
+                widths={[400, 640]}
+                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                class="absolute inset-0 -z-20 h-full w-full object-cover transition duration-700 motion-safe:group-hover:scale-110"
+              />
+            )}
+            <!-- Velo oscuro para que el texto blanco se lea sobre cualquier foto -->
+            <span aria-hidden="true" class="absolute inset-0 -z-10 bg-gradient-to-t from-zinc-950/90 via-zinc-950/55 to-zinc-950/10 transition-colors duration-300 group-hover:from-brand-700/90 group-hover:via-accent-700/55"></span>
+            <span class="flex items-center justify-between font-serif text-2xl font-semibold">
+              {c.name}
+              <span aria-hidden="true" class="transition motion-safe:group-hover:translate-x-1">→</span>
+            </span>
+            <span class="mt-1 text-sm text-white/90">{c.description}</span>
+          </a>
         </li>
       ))}
     </ul>
   </section>
 </BaseLayout>
+
+<script>
+  // Filtro de artículos por categoría, sin recargar la página.
+  const buttons = document.querySelectorAll<HTMLButtonElement>('#filtros [data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-card]');
+  const status = document.getElementById('filtro-estado');
+
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      let shown = 0;
+      cards.forEach((card) => {
+        const show = f === 'todos' || card.dataset.category === f;
+        card.hidden = !show;
+        if (show) {
+          shown++;
+          card.classList.add('is-visible'); // por si aún no había aparecido con el scroll
+        }
+      });
+      if (status) status.textContent = `Mostrando ${shown} ${shown === 1 ? 'artículo' : 'artículos'}`;
+    }),
+  );
+</script>

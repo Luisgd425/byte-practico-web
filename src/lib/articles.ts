@@ -1,4 +1,5 @@
 // Funciones para obtener artículos. Todas las páginas usan esto para no repetir filtros.
+import type { ImageMetadata } from 'astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { CATEGORIES, type CategorySlug } from '../consts';
 
@@ -25,3 +26,7 @@ export function readingTime(body = ''): number {
 
 export const formatDate = (d: Date) =>
   d.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+// Foto de cada categoría: src/assets/categorias/<slug>.jpg (fotos de Unsplash, ver docs/creditos-imagenes.md)
+const categoryImages = import.meta.glob<{ default: ImageMetadata }>('../assets/categorias/*.jpg', { eager: true });
+export const categoryImage = (slug: CategorySlug) => categoryImages[`../assets/categorias/${slug}.jpg`]?.default;

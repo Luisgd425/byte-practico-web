@@ -17,12 +17,48 @@
   --color-brand-500: #3b82f6;
   --color-brand-600: #2563eb;
   --color-brand-700: #1d4ed8;
+  /* Acento violeta para los degradados (con texto blanco encima cumple AA: violet-700) */
+  --color-accent-400: #a78bfa;
+  --color-accent-600: #7c3aed;
+  --color-accent-700: #6d28d9;
+
+  --animate-gradient: gradient-shift 14s ease infinite;
+  --animate-float: float 9s ease-in-out infinite;
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(0, -18px, 0) scale(1.05); }
+  }
+}
+
+/* Aparición suave al hacer scroll. Solo se oculta si hay JavaScript (clase .js en <html>)
+   y el visitante no pidió menos movimiento: sin JS el contenido se ve siempre. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @layer base {
   html {
     @apply bg-white text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
     color-scheme: light;
+    /* El encabezado es fijo: los saltos a #secciones no quedan tapados */
+    scroll-padding-top: 5.5rem;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
   }
   html.dark {
     color-scheme: dark;
