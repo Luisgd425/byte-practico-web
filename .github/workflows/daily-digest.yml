@@ -70,12 +70,18 @@ jobs:
           git checkout -b "digest/$D"
           git commit -m "Borrador del resumen diario $D"
           git push origin "digest/$D"
+          {
+            echo "Borrador generado automáticamente. Antes de aprobar:"
+            echo "- [ ] Verifiqué cada noticia en su fuente original"
+            echo "- [ ] Añadí mi opinión o experiencia"
+            echo "- [ ] Cambié \`draft: true\` por \`draft: false\` (o lo dejo como borrador)"
+            echo "- [ ] Copié \`newsletter/$D.html\` a beehiiv"
+            echo "- [ ] Publiqué en redes con los textos de abajo (después del merge)"
+            echo
+            echo "Si no te sirve, cierra el PR sin aprobarlo y borra la rama."
+            echo
+            if [ -f "newsletter/$D-redes.md" ]; then cat "newsletter/$D-redes.md"; fi
+          } > "$RUNNER_TEMP/pr-body.md"
           gh pr create --base "${{ github.event.repository.default_branch }}" \
             --title "Resumen diario $D (borrador)" \
-            --body "Borrador generado automáticamente. Antes de aprobar:
-          - [ ] Verifiqué cada noticia en su fuente original
-          - [ ] Añadí mi opinión o experiencia
-          - [ ] Cambié \`draft: true\` por \`draft: false\` (o lo dejo como borrador)
-          - [ ] Copié \`newsletter/$D.html\` a beehiiv
-
-          Si no te sirve, cierra el PR sin aprobarlo y borra la rama."
+            --body-file "$RUNNER_TEMP/pr-body.md"

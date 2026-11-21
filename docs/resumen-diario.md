@@ -2,10 +2,13 @@
 
 El script `scripts/daily-digest.ts` lee las fuentes de `scripts/sources.json`, toma lo publicado en las últimas 24 h, quita duplicados y pide a un modelo de IA un **borrador** con 5 noticias. Nunca publica nada.
 
-Genera dos archivos con la fecha de Ciudad Juárez:
+Genera tres archivos con la fecha de Ciudad Juárez:
 
 - `src/content/borradores/AAAA-MM-DD-resumen.md`: el artículo, con `draft: true`.
 - `newsletter/AAAA-MM-DD.html`: la versión para beehiiv.
+- `newsletter/AAAA-MM-DD-redes.md`: textos para Instagram, Facebook y un guion de ~30 s para Shorts/Reels. En GitHub aparecen también en la descripción del Pull Request, listos para copiar.
+
+El borrador ya trae la foto de la categoría Noticias IA. Si quieres, cámbiala por una de la noticia principal (ver `docs/creditos-imagenes.md`).
 
 Los enlaces a las fuentes salen de los feeds, no de la IA, así que no puede inventar URLs. Aun así, **verifica cada noticia** antes de publicar.
 

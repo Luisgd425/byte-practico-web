@@ -12,12 +12,14 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import Anthropic from '@anthropic-ai/sdk';
 import Parser from 'rss-parser';
-import { type Candidate, localDate, parseDigest, selectRecent, toMarkdown, toNewsletterHtml } from './digest-lib.ts';
+import { type Candidate, localDate, parseDigest, selectRecent, toMarkdown, toNewsletterHtml, toSocialMarkdown } from './digest-lib.ts';
 
 const now = new Date();
 const date = localDate(now);
 const mdPath = `src/content/borradores/${date}-resumen.md`;
 const htmlPath = `newsletter/${date}.html`;
+const socialPath = `newsletter/${date}-redes.md`; // textos para redes; el workflow los pone en el PR
+const SITE_URL = 'https://byte-practico.byte-practico-web.workers.dev'; // mismo valor que `site` en astro.config.mjs
 
 if (existsSync(mdPath) && !process.argv.includes('--force')) {
   console.log(`Ya existe ${mdPath}. Usa "npm run digest -- --force" para regenerarlo.`);
@@ -64,8 +66,12 @@ Para cada una escribe con tus propias palabras, sin copiar frases de la fuente:
 - "porQueImporta": 1-2 frases sobre qué significa para el lector.
 No inventes datos que no estén en la lista. Tono cercano, claro y sin exageraciones.
 Responde SOLO con JSON válido, sin texto adicional, con esta forma:
-{"titulo": "titular del resumen del día (máx. 100 caracteres)", "descripcion": "meta descripción (máx. 160 caracteres)", "intro": "1-2 frases de introducción", "noticias": [{"id": 1, "titulo": "...", "resumen": "...", "porQueImporta": "..."}]}
-El "id" debe ser el número de la noticia en la lista.`;
+{"titulo": "titular del resumen del día (máx. 100 caracteres)", "descripcion": "meta descripción (máx. 160 caracteres)", "intro": "1-2 frases de introducción", "noticias": [{"id": 1, "titulo": "...", "resumen": "...", "porQueImporta": "..."}], "redes": {"instagram": "...", "facebook": "...", "short": "..."}}
+El "id" debe ser el número de la noticia en la lista.
+En "redes" escribe textos para la cuenta @bytepractico, sin inventar datos:
+- "instagram": pie de foto de 3-5 líneas con las noticias clave, emojis moderados, una invitación a leer el resumen completo ("link en la bio") y 5-8 hashtags en español.
+- "facebook": 2-3 párrafos cortos que inviten a leer el artículo completo, sin hashtags ni enlace.
+- "short": guion hablado de unos 30 segundos (80-100 palabras) con un gancho inicial fuerte, las 3 noticias más importantes y un cierre que invite a seguir la cuenta.`;
 
 const list = candidates
   .map((c: Candidate) => `[${c.id}] ${c.source} | ${c.date.toISOString()} | ${c.title}\n${c.snippet}`)
@@ -148,4 +154,9 @@ const digest = parseDigest(text, candidates);
 mkdirSync('newsletter', { recursive: true });
 writeFileSync(mdPath, toMarkdown(digest, candidates, date));
 writeFileSync(htmlPath, toNewsletterHtml(digest, candidates));
-console.log(`✅ Borrador: ${mdPath}\n✅ Newsletter: ${htmlPath}\nRevísalos antes de publicar: nada se publica solo.`);
+const social = toSocialMarkdown(digest, SITE_URL, date);
+if (social) writeFileSync(socialPath, social);
+else console.warn('⚠️  El modelo no devolvió textos para redes; el borrador se generó igual.');
+console.log(
+  `✅ Borrador: ${mdPath}\n✅ Newsletter: ${htmlPath}\n${social ? `✅ Redes: ${socialPath}\n` : ''}Revísalos antes de publicar: nada se publica solo.`,
+);

@@ -1,7 +1,7 @@
 // Pruebas del resumen diario: `npm run test:digest`
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { localDate, parseDigest, selectRecent, toMarkdown, toNewsletterHtml } from './digest-lib.ts';
+import { localDate, parseDigest, selectRecent, toMarkdown, toNewsletterHtml, toSocialMarkdown } from './digest-lib.ts';
 
 const now = new Date('2026-11-16T13:00:00Z');
 const h = (hoursAgo: number) => new Date(now.getTime() - hoursAgo * 3600_000);
@@ -50,7 +50,23 @@ test('toMarkdown y toNewsletterHtml generan borrador y escapan HTML', () => {
   const md = toMarkdown(d, cands, '2026-11-16');
   assert.match(md, /^title: "Título \\"x\\""$/m);
   assert.match(md, /^draft: true$/m);
+  assert.ok(md.includes('\nheroImage: ../../assets/categorias/noticias-ia.jpg\n'));
   assert.match(md, /Fuente: \[OpenAI\]\(https:\/\/a\.com\/1\)/);
   const html = toNewsletterHtml(d, cands);
   assert.ok(html.includes('&lt;b&gt;a&lt;/b&gt;'));
+});
+
+test('redes: opcionales y con el enlace del artículo', () => {
+  const cands = selectRecent([item('A', 'https://a.com/1', 1)], now);
+  const base = { titulo: 'T', descripcion: 'D', intro: 'I', noticias: [{ id: 1, titulo: 'a', resumen: 'r', porQueImporta: 'p' }] };
+  const sin = parseDigest(JSON.stringify(base), cands);
+  assert.equal(sin.redes, undefined);
+  assert.equal(toSocialMarkdown(sin, 'https://x.dev/', '2026-11-16'), '');
+  const incompleta = parseDigest(JSON.stringify({ ...base, redes: { instagram: 'ig', facebook: '', short: 's' } }), cands);
+  assert.equal(incompleta.redes, undefined);
+  const con = parseDigest(JSON.stringify({ ...base, redes: { instagram: 'ig', facebook: 'fb', short: 'guion' } }), cands);
+  const out = toSocialMarkdown(con, 'https://x.dev/', '2026-11-16');
+  assert.ok(out.includes('https://x.dev/articulos/2026-11-16-resumen/'));
+  assert.ok(out.includes('### Instagram\nig'));
+  assert.ok(out.includes('guion'));
 });

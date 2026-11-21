@@ -17,11 +17,18 @@ export interface DigestItem {
   porQueImporta: string;
 }
 
+export interface Redes {
+  instagram: string; // pie de foto con hashtags
+  facebook: string;
+  short: string; // guion de ~30 s para YouTube Shorts / Reels
+}
+
 export interface Digest {
   titulo: string;
   descripcion: string;
   intro: string;
   noticias: DigestItem[];
+  redes?: Redes; // opcional: si el modelo no lo da, el borrador se genera igual
 }
 
 // Fecha AAAA-MM-DD en Ciudad Juárez (no en UTC), para nombrar los archivos.
@@ -89,6 +96,8 @@ export function parseDigest(text: string, candidates: Candidate[]): Digest {
   d.titulo = d.titulo.slice(0, 110);
   d.descripcion = d.descripcion.slice(0, 170);
   d.intro = str(d.intro) ? d.intro : '';
+  const r = d.redes;
+  d.redes = r && str(r.instagram) && str(r.facebook) && str(r.short) ? r : undefined;
   return d;
 }
 
@@ -102,6 +111,8 @@ title: ${yaml(d.titulo)}
 description: ${yaml(d.descripcion)}
 pubDate: ${date}
 category: noticias-ia
+heroImage: ../../assets/categorias/noticias-ia.jpg
+heroAlt: "Ondas de partículas azules brillantes sobre fondo oscuro"
 sources:
 ${sources.map((s) => `  - title: ${yaml(`${s.source}: ${s.title}`)}\n    url: ${yaml(s.url)}`).join('\n')}
 draft: true
@@ -111,7 +122,7 @@ draft: true
   BORRADOR GENERADO AUTOMÁTICAMENTE. Antes de publicar (ver docs/guia-editorial.md):
   1. Abre cada fuente y verifica que el resumen sea correcto.
   2. Añade tu opinión o experiencia en al menos una noticia.
-  3. Opcional: añade heroImage y heroAlt en el frontmatter.
+  3. Opcional: cambia heroImage por una foto propia de la noticia principal (y su heroAlt).
   4. Cambia draft: true por draft: false.
 -->
 
@@ -155,5 +166,26 @@ ${items}
   <hr style="margin:32px 0;border:none;border-top:1px solid #e4e4e7">
   <p style="font-size:14px;color:#52525b">Byte Práctico · Tecnología e IA explicadas para usarlas hoy.</p>
 </div>
+`;
+}
+
+// Textos listos para copiar en redes. Se muestran en el Pull Request del día.
+export function toSocialMarkdown(d: Digest, siteUrl: string, date: string): string {
+  if (!d.redes) return '';
+  const url = `${siteUrl.replace(/\/$/, '')}/articulos/${date}-resumen/`;
+  return `## 📱 Textos para redes (revísalos antes de publicar)
+
+**Enlace del artículo** (cuando lo publiques): ${url}
+
+### Instagram
+${d.redes.instagram}
+
+### Facebook
+${d.redes.facebook}
+
+${url}
+
+### Guion para YouTube Shorts / Reels (~30 s)
+${d.redes.short}
 `;
 }
